@@ -24,7 +24,7 @@ def upload_file_page():
         file_path = upload_file(file, return_filepath = True)
 
         # prediction = implement_ML(file_path)
-        prediction = 'YOU HAVE CANCER'
+        prediction = 'UNDEFINED'
         flash(f'File uploaded successfully. Prediction: {prediction}', 'alert alert-success')
     else:
         flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'alert alert-danger')
