@@ -11,15 +11,22 @@ ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def upload_file(file, return_filepath = False):
-    # Create 'uploads' directory if it doesn't exist
-    if not os.path.exists('uploads'):
-        os.makedirs('uploads')
+def resize_img(image,  dims = (100,75)):
+    img = Image.open(image)
+    return img.resize(dims, Image.LANCZOS)
 
+def upload_file(file, return_filename=False):
     filename = secure_filename(file.filename)
-    file.save(os.path.join('uploads', filename))
-    if return_filepath:
-        return os.path.join('uploads', filename)
+    file_path = os.path.join('app/static/img', filename)
+
+    # Resize the image to 100x75
+    resized_image = resize_img(file)
+
+    # Save the resized image
+    resized_image.save(file_path)
+
+    if return_filename:
+        return filename
 
 
 # model = load_model('app/networks/model.h5')
@@ -30,8 +37,7 @@ def upload_file(file, return_filepath = False):
 
 
 # def img_to_input(path: str):
-#     img = Image.open(path)
-#     img = img.resize((100, 75), Image.LANCZOS)
+#     img = resize_img(path)
 #     return list(img.getdata())
 
 

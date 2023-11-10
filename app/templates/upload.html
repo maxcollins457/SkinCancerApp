@@ -12,5 +12,9 @@
          </div>
          <button type="submit" class="btn btn-primary">Upload</button>
       </form>
+      {% if img_filename %}
+         <p>Last Uploaded Image (after resizing):</p>
+         <img src="{{ url_for('static', filename=img_filename) }}">
+      {% endif %}
    </div>
 {% endblock %}
