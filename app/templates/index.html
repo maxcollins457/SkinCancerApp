@@ -11,5 +11,113 @@
             <p>Data Source: <a href="https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000/" target="_blank">MNIST HAM10000 Dataset on Kaggle</a></p>
         </div>
     </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2>Types of Skin Lesions</h2>
+            <p>
+                The project uses a dataset of pigmented skin lesions, which are categorized into seven different types. Here is a brief list of each category:
+            </p>
+            <ul>
+                <li><a href="#melanocytic-nevi">Melanocytic nevi</a></li>
+                <li><a href="#melanoma">Melanoma</a></li>
+                <li><a href="#benign-keratosis-like-lesions">Benign keratosis-like lesions</a></li>
+                <li><a href="#basal-cell-carcinoma">Basal cell carcinoma</a></li>
+                <li><a href="#actinic-keratoses">Actinic keratoses</a></li>
+                <li><a href="#vascular-lesions">Vascular lesions</a></li>
+                <li><a href="#dermatofibroma">Dermatofibroma</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <h2 id="melanocytic-nevi">Melanocytic nevi</h2>
+        <div class="col">
+            <p>
+                Melanocytic nevi are typically benign moles or nevi, which are non-cancerous skin lesions. They are common and usually harmless.
+            </p>
+            <a href="https://www.nhs.uk/conditions/birthmarks/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/melanocytic_naevi.jpg') }}"
+                        alt="Example of Melanocytic Nevi" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <h2 id="melanoma">Melanoma</h2>
+        <div class="col">
+            <p>
+                Melanoma is a malignant skin cancer that develops from melanocytes. It can be very aggressive and should be diagnosed and treated early.
+            </p>
+            <a href="https://www.nhs.uk/conditions/melanoma-skin-cancer/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/Melanoma.jpg') }}"
+                        alt="Example of Melanoma" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2 id="benign-keratosis-like-lesions">Benign keratosis-like lesions</h2>
+            <p>
+                Benign keratosis-like lesions are non-cancerous skin lesions that may include seborrheic keratoses, which are usually benign warty growths.
+            </p>
+            <a href="https://bnssg.icb.nhs.uk/directory/benign-skin-lesions/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/keratosis.webp') }}"
+                        alt="Example of Benign keratosis-like lesions" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2 id="basal-cell-carcinoma">Basal cell carcinoma</h2>
+            <p>
+                Basal cell carcinoma is a common type of skin cancer that usually develops on sun-exposed areas of the skin. It is typically slow-growing and rarely spreads to other parts of the body.
+            </p>
+            <a href="https://www.nbt.nhs.uk/our-services/a-z-services/skin-cancer-services/skin-cancer-patient-information/basal-cell-carcinoma" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/basal_carcinoma.jpg') }}"
+                        alt="Example of Basal cell carcinoma" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2 id="actinic-keratoses">Actinic keratoses</h2>
+            <p>
+                Actinic keratoses are precancerous skin growths that are often caused by sun exposure. They should be treated to prevent them from developing into skin cancer.
+            </p>
+            <a href="https://www.nhs.uk/conditions/actinic-keratoses/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/actinic_keratosis.jpg') }}"
+                        alt="Example of actinic keratosis" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2 id="vascular-lesions">Vascular lesions</h2>
+            <p>
+                Vascular lesions include various vascular skin conditions such as hemangiomas, which are non-cancerous blood vessel tumors, and port-wine stains.
+            </p>
+            <a href="https://www.gosh.nhs.uk/conditions-and-treatments/conditions-we-treat/venous-malformations/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/vascular.webp') }}"
+                        alt="Example of Vascular lesion" width="50%">
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col">
+            <h2 id="dermatofibroma">Dermatofibroma</h2>
+            <p>
+                Dermatofibromas are benign, hard nodules that often develop on the lower legs. They are typically non-cancerous.
+            </p>
+            <a href="https://www.newcastle-hospitals.nhs.uk/services/dermatology/patient-dermatology-information-leaflets/dermatofibroma/" target="_blank">More Info</a>
+        </div>
+        <div class="col">
+            <img class="img-fluid" src="{{ url_for('static', filename='img/Dermatofibroma.webp') }}"
+                        alt="Example of Dermatofibroma" width="50%">
+        </div>
+    </div>
 </div>
 {% endblock main %}

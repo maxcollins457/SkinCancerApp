@@ -32,8 +32,8 @@ def upload_file_page():
         session['img_filename'] = filename
         # prediction = implement_ML(file_path)
         prediction = 'UNDEFINED'
-        flash(f'File uploaded successfully. Prediction: {prediction}', 'alert alert-success')
+        flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
     else:
-        flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'alert alert-danger')
+        flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
 
     return redirect(url_for('upload.show_upload_form'))
