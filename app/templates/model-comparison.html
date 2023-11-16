@@ -9,15 +9,40 @@
     <ul class="nav nav-tabs" id="modelTabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="model1-tab" data-toggle="tab" href="#model1" role="tab"
-                aria-controls="model1" aria-selected="true">Model 1</a>
+                aria-controls="model1" aria-selected="true">Binary Classification</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="model2-tab" data-toggle="tab" href="#model2" role="tab" aria-controls="model2"
-                aria-selected="false">Binary Classification</a>
+                aria-selected="false">Traditional CNN</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="model3-tab" data-toggle="tab" href="#model3" role="tab" aria-controls="model3"
+                aria-selected="false">Multi-input</a>
         </li>
     </ul>
     <div class="tab-content" id="modelTabsContent">
         <div class="tab-pane fade show active" id="model1" role="tabpanel" aria-labelledby="model1-tab">
+            <div class="row mt-4">
+                <div class="col">
+                    <p>This model is a binary classification model. It predicts whether or not the lesion in the  uploaded image is cancerous or not.</p>
+                    <h2>Model Structure</h2>
+                    <p>The model utilizes a set of Conv2D layers with MaxPooling and Dropout layers. This architecture
+                        is designed to effectively learn and represent features from the input images, enabling accurate
+                        classification of skin lesions.</p>
+                    <h3>Model Performance</h3>
+                    <p>
+                        The Confusion matrix for this architecture can be seen below. False negatives are minimised but there is a 17% false positive rate.
+                    </p>
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/bin_model_CM.png') }}"
+                        alt="Confusion matrix for binary ML model">
+                </div>
+                <div class="col">
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/binary_model_plot.png') }}"
+                        alt="Model Plot">
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="model2" role="tabpanel" aria-labelledby="model2-tab">
             <div class="row mt-4">
                 <div class="col">
                     <h2>Model Structure</h2>
@@ -38,23 +63,24 @@
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="model2" role="tabpanel" aria-labelledby="model2-tab">
+        
+        <div class="tab-pane fade" id="model3" role="tabpanel" aria-labelledby="model3-tab">
             <div class="row mt-4">
                 <div class="col">
-                    <p>This model is a binary classification model. It predicts whether or not the uploaded image is cancerous or not.</p>
+                    <p>This model is a multi-input classification model. It predicts whether or not the lesion in the uploaded image is cancerous or not. This is also given the age and sex of the patitent as well as the localization of the lesion.</p>
                     <h2>Model Structure</h2>
                     <p>The model utilizes a set of Conv2D layers with MaxPooling and Dropout layers. This architecture
                         is designed to effectively learn and represent features from the input images, enabling accurate
-                        classification of skin lesions.</p>
+                        classification of skin lesions. This also uses dense layers to extract information from the age, sex and localization.</p>
                     <h3>Model Performance</h3>
                     <p>
-                        The Confusion matrix for this architecture can be seen below. False negatives are minimised but there is a 17% false positive rate.
+                        The Confusion matrix for this architecture can be seen below.
                     </p>
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/bin_model_CM.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/multi_input_model_CM.png') }}"
                         alt="Confusion matrix for binary ML model">
                 </div>
                 <div class="col">
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/binary_model_plot.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/multi_input_model_plot.png') }}"
                         alt="Model Plot">
                 </div>
             </div>

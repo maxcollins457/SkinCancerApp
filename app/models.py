@@ -3,9 +3,13 @@ from PIL import Image
 from werkzeug.utils import secure_filename
 import os
 
-# from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
+
+ML_MODELS = {
+    ''
+}
 
 
 def allowed_file(filename):
@@ -29,25 +33,28 @@ def upload_file(file, return_filename=False):
         return filename
 
 
-# model = load_model('app/networks/model.h5')
+
+model = load_model('app/networks/model.h5')
 
 
-# def myScaler(x: list, m= 159.88411714650246, s = 46.45448942251337):
-#     return (x-m)/s
+def myScaler(x: list, m= 159.88411714650246, s = 46.45448942251337):
+    return (np.asarray(x)-m)/s
 
 
-# def img_to_input(path: str):
-#     img = resize_img(path)
-#     return list(img.getdata())
+def img_to_input(path: str):
+    img = resize_img(path)
+    return list(img.getdata())
 
 
-# def make_prediciton(input: list, model = model):
-#     scaled_input = myScaler(input)
-#     x = (scaled_input).reshape(1, *(75,100,3))
-#     prediction = model.predict(x)
-#     predicted_class  = np.argmax(prediction)
-#     return predicted_class
+def make_prediciton(input: list, model = model):
+    scaled_input = myScaler(input)
+    x = (scaled_input).reshape(1, *(75,100,3))
+    prediction = model.predict(x)
+    predicted_class  = np.argmax(prediction)
+    prob = 100*np.max(prediction)
+    prob_str = f'Probability: {prob:.2f}%'
+    return predicted_class, prob_str
 
-# def implement_ML(path):
-#     input = img_to_input(path)
-#     return make_prediciton(input)
+def implement_ML(path):
+    input = img_to_input(path)
+    return make_prediciton(input)
