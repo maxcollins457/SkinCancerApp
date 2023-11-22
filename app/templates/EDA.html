@@ -1,0 +1,139 @@
+{% extends "base-template.html" %}
+
+{% block title %}EDA{% endblock title %}
+
+{% block main %}
+<div class="container mt-4">
+    <h1>Exploratory Data Analysis</h1>
+    <p>Exploratory Data Analysis (EDA) serves as a crucial preliminary step in understanding the MNIST HAM 10000
+        dataset, specifically focusing on age, localization, and cell type distributions. EDA is a systematic approach
+        to analyzing and visualizing data to extract meaningful insights and patterns. In the context of creating neural
+        networks for the classification of skin lesions, EDA plays a pivotal role in several aspects.</p>
+    <p>Firstly, by thoroughly exploring the dataset, we gain a comprehensive understanding of the distribution of age,
+        which is a key factor in skin lesion classification. Age-related variations in skin conditions can significantly
+        impact the appearance of lesions, and EDA helps us identify potential trends or patterns in different age
+        groups.</p>
+    <p>Localization information is another critical aspect considered during EDA. Different regions of the body may
+        exhibit distinct characteristics in terms of skin lesions. Analyzing the distribution of lesions across various
+        localizations provides insights into potential correlations and variations that can aid in the development of a
+        robust classification model.</p>
+    <p>Furthermore, investigating the distribution of cell types, such as Melanocytic nevi, Melanoma, and Benign
+        keratosis-like lesions, allows us to understand the imbalance within the dataset. This knowledge is crucial for
+        developing effective strategies, such as resampling techniques, to address potential bias and enhance model
+        performance.</p>
+    <div class="container mt-4">
+        <div class="row mt-4">
+            <h2>Age distribution</h2>
+            <div class="col mt-4">
+                <p>The histogram of the distribution of ages reveals a relatively symmetrical and bell-shaped pattern,
+                    suggesting a typical distribution. The peak, or mode, is centered around the age of 45, with a
+                    substantial number of individuals clustered in this age group. </p>
+                <p>The frequencies gradually decrease on
+                    either side of the mode, with the distribution exhibiting a gradual decline towards both younger and
+                    older ages. Notably, there is a notable concentration in the age range between 40 and 65, indicating
+                    a significant demographic within this dataset.</p>
+            </div>
+            <div class="col mt-4">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/eda/AgeDist.png') }}"
+                    alt="Distribution of ages in the dataset">
+            </div>
+        </div>
+        <div class="row mt-4">
+            <h2>Localization distribution</h2>
+            <div class="col mt-4">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/eda/LocalizationDist.png') }}"
+                    alt="Distribution of localizations in the dataset">
+            </div>
+            <div class="col mt-4">
+                <p>The bar chart representing the distribution of skin lesion localizations provides a clear
+                    visualization of the prevalence across various anatomical regions. The 'back' and 'lower extremity'
+                    regions stand out as the most common locations, with frequencies of 2192 and 2077, respectively.
+                    These regions are followed by 'trunk' and 'upper extremity,' indicating a significant occurrence in
+                    these broader body areas.</p>
+                <p>'Abdomen,' 'face,' and 'chest' exhibit moderate frequencies, while 'foot,'
+                    'unknown,' 'neck,' 'scalp,' 'hand,' 'ear,' 'genital,' and 'acral' regions show lower frequencies,
+                    suggesting a less frequent occurrence in these specific areas.</p>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <h2>Lesion type by age distribution</h2>
+            <div class="col mt-4">
+                <p>Melanocytci nevi is the most common class by far and has a very different distribution to the other
+                    classes. It has a balanced distribution, with a peak between 40-50. Interestingly, despite being the
+                    most prevelant class overall, in ages over 80, it is not as common as the others.</p>
+                <p>For the other classes, the distribution is a left (or negative) skew, with peaks between 60-80. These calsses also
+                    have almost no cases in ages below 20. This could be useful in the multi-input model, as according
+                    to this dataset, if the patient is under 20 the lesion is most likely Melanocyctic nevi. It would be
+                    important to check if this is the case in the population as a whole, or juts a feature of this
+                    dataset.</p>
+            </div>
+            <div class="col mt-4">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/eda/lesion_type_by_age.png') }}"
+                    alt="Distribution of localizations in the dataset">
+            </div>
+
+        </div>
+        <div class="row mt-4">
+            <h2>Cell type distribution</h2>
+            <div class="col mt-4">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/eda/Cell_type.png') }}"
+                    alt="Distribution of localizations in the dataset">
+            </div>
+            <div class="col mt-4">
+                <p>The vast majority of the lesions are classified as Melanocytic nevi. This is then followed by
+                    Melanoma and Benign keratosis-like lesions. </p>
+                <p>This shows that the dataset is imbalanced with regard to
+                    the target variable (lesion type). This is what alerted me to the fact that resampling would likely
+                    be necessary to achieve good model performance. </p>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <h2>Cancer distribution</h2>
+            <div class="col mt-4">
+                <p>Only two of the lesion classifications present in the dataset are cancerous. These are: Basal cell
+                    carcinoma and Melanoma. </p>
+                <p>Together, these represent around 16% of the dataset. Therefore, for the
+                    binary classification model, the dataset is still imbalanced.</p>
+            </div>
+            <div class="col mt-4">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/eda/cancerous.png') }}"
+                    alt="Distribution of localizations in the dataset">
+            </div>
+        </div>
+        <div class="row mt-4">
+            <h2>Cell types by sex</h2>
+
+            <div class="row mt-4">
+                <div class="col mt-4">
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/eda/comp_female.png') }}"
+                        alt="Distribution of cell types in females in the dataset">
+                </div>
+                <div class="col mt-4">
+                    <p>The distribution of lesion types for females is similar to the overall distribution, with the
+                        slight exception that Benign keratosis-like lesions are more common than Melanoma.</p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col mt-4">
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/eda/comp_male.png') }}"
+                        alt="Distribution of cell types in males in the dataset">
+                </div>
+                <div class="col mt-4">
+                    <p>The distribution of lesion types for males is similar to the overall distribution.</p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col mt-4">
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/eda/comp_unknown.png') }}"
+                        alt="Distribution of cell types in unknwon sex in the dataset">
+                </div>
+                <div class="col mt-4">
+                    <p>Those with unkown sex make up a small part of the datatset (0.6%). As such, there is not enough
+                        data here to draw any conclusions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock main %}

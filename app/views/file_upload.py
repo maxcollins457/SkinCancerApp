@@ -10,7 +10,7 @@ upload_bp = Blueprint('upload', __name__)
 @upload_bp.route('/upload')
 def show_upload_form():
     try:
-        img_filename =  'img/' + session['img_filename']
+        img_filename =  'img/temp/' + session['img_filename']
     except:
         session['img_filename'] = None
         img_filename = None
@@ -39,7 +39,7 @@ def upload_file_page():
         print("Current Working Directory:", os.getcwd())
 
         print(filename)
-        prediction =  implement_ML(os.path.join('app/static/img', filename))
+        prediction =  implement_ML(os.path.join('app/static/img/temp', filename))
         flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
     else:
         flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
