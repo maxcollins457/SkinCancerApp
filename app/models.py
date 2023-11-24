@@ -2,6 +2,12 @@ import numpy as np
 from PIL import Image
 from werkzeug.utils import secure_filename
 import os
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 from tensorflow.keras.models import load_model
 
@@ -22,8 +28,32 @@ ML_MODELS = {
     # },
     'Multi-input': {
         'model': Multi_input_model,
-        'inputs': ['img', 'age', 'localization', 'sex']
-    }
+        'inputs': ['img', 'age', 'localization', 'sex'],
+        'cat_dummies': ['localization_acral',
+                        'localization_back',
+                        'localization_chest',
+                        'localization_ear',
+                        'localization_face',
+                        'localization_foot',
+                        'localization_genital',
+                        'localization_hand',
+                        'localization_lower extremity',
+                        'localization_neck',
+                        'localization_scalp',
+                        'localization_trunk',
+                        'localization_unknown',
+                        'localization_upper extremity',
+                        'sex_male',
+                        'sex_unknown']
+    },
+    # 'VGG': {
+    #     'model': VGG_model,
+    #     'inputs': ['img']
+    # },
+    # 'MobileNet': {
+    #     'model': MobileNet_model,
+    #     'inputs': ['img']
+    # }
 }
 
 Code_to_cell = {0: 'Actinic keratoses',
@@ -64,19 +94,109 @@ def img_to_input(path: str):
     img = resize_img(path)
     return list(img.getdata())
 
+def multi_input_preprocess(age , sex , local ):
+    mean_age = 51.863828077927295
 
-def make_prediciton(input: list, model = CNN_model):
+    scaled_age =  np.asarray(age)/mean_age
+
+
+    feature_list = ML_MODELS['multi-input']['cat_dummies']
+    cat_df = pd.DataFrame(0, index=np.arange(1), columns=feature_list)
+
+    local = 'localization_' + local
+    sex = 'sex_' + sex
+    for col in cat_df.columns:
+      if col == local or col == sex:
+        cat_df[col] = 1
+
+    dummies = np.asarray(cat_df)
+    scaled_age = scaled_age.reshape(-1,1)
+
+    x_num = np.concatenate((scaled_age, dummies), axis = 1)
+    return x_num
+
+
+def make_prediciton(input: list, model_name = 'CNN', age= 51.863828077927295, sex = 'male', local = 'back'):
+    model = ML_MODELS[model_name]['model']
     scaled_input = myScaler(input)
-    x = (scaled_input).reshape(1, *(75,100,3))
-    prediction = model.predict(x)
+    x_img = (scaled_input).reshape(1, *(75,100,3))
 
-    prediction_list = [f'{Code_to_cell.get(i)}: {(100*pred):.2f}% ' for i , pred in enumerate(prediction[0])]
-
-    predicted_class  = Code_to_cell.get(np.argmax(prediction))
-    prob = 100*np.max(prediction)
-    prob_str = f'Probability: {prob:.2f}%'
-    return predicted_class, prob_str, prediction_list
+    if model_name == 'Multi-input':
+        x_num = multi_input_preprocess(age, sex, local)
+        prediction = model.predict(x_num, x_img)
+    else:
+        prediction = model.predict(x_img)
+    prediction_dict = { Code_to_cell.get(i):100*pred for i , pred in enumerate(prediction[0])}
+    return prediction_dict
 
 def implement_ML(path):
     input = img_to_input(path)
     return make_prediciton(input)
+
+
+def generate_pdf_report(class_probabilities):
+    # Create a BytesIO buffer to store the PDF
+    pdf_buffer = BytesIO()
+
+    # Create a PDF document
+    pdf = canvas.Canvas(pdf_buffer, pagesize=letter)
+
+    # Set font and font size
+    pdf.setFont("Helvetica", 12)
+
+    # Add content to the PDF
+    pdf.drawString(100, 750, "Classification Report")
+    pdf.drawString(100, 730, "-----------------------------------")
+
+    # Save the bar chart as an image file 
+    pdf_chart_buffer = BytesIO()
+    generate_seaborn_bar_chart(class_probabilities, pdf_chart_buffer)
+    pdf_chart_buffer.seek(0)
+
+    # Create a unique filename for the chart image
+    chart_image_filename = 'chart_image.png'
+
+    # Save the chart image to a file
+    with open(chart_image_filename, 'wb') as chart_image_file:
+        chart_image_file.write(pdf_chart_buffer.read())
+
+    # Draw the chart image onto the PDF
+    pdf.drawInlineImage(chart_image_filename, 100, 500, width=400, height=200)
+
+    # Add classification information
+    pdf.drawString(100, 480, "Classification Information:")
+    y_position = 460
+
+    # Save the PDF to the buffer
+    pdf.save()
+
+    # Move the buffer position to the beginning
+    pdf_buffer.seek(0)
+
+    return pdf_buffer
+
+
+def generate_seaborn_bar_chart(class_probabilities, buffer):
+    # Create a DataFrame from the class_probabilities dictionary
+    data = {'Class': list(class_probabilities.keys()), 'Probability': list(class_probabilities.values())}
+    df = pd.DataFrame(data)
+
+    # Order the DataFrame by probability in descending order
+    df = df.sort_values(by='Probability', ascending=False)
+
+    # Create a horizontal bar chart using Seaborn
+    sns.set(style="whitegrid")
+    plt.figure(figsize=(8, 4))
+
+    # Create the bar plot
+    sns.barplot(x='Probability', y='Class', data=df, color='skyblue')
+
+    # Save the Seaborn plot to a BytesIO buffer
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.close()
+
+
+def get_localizations():
+    df = pd.read_csv('app/data/CancerData.csv')
+    locs = list(df['Localization'].unique())
+    return locs

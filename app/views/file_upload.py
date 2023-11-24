@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
-from app.models import allowed_file, ALLOWED_EXTENSIONS, upload_file, implement_ML
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, make_response
+from app.models import allowed_file, ALLOWED_EXTENSIONS, upload_file, implement_ML, generate_pdf_report, get_localizations, ML_MODELS
 import os
-
-
-
+from io import BytesIO
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -14,10 +12,12 @@ def show_upload_form():
     except:
         session['img_filename'] = None
         img_filename = None
-
-    
+    localizations = get_localizations()
+    model_names = ML_MODELS.keys()
     return render_template('upload.html', 
-                           img_filename = img_filename)
+                           img_filename = img_filename,
+                           localizations=localizations,
+                           model_names = model_names)
 
 @upload_bp.route('/uploader', methods=['POST'])
 def upload_file_page():
@@ -28,6 +28,8 @@ def upload_file_page():
 
     file = request.files['file']
 
+    
+
     if file.filename == '':
         flash('No selected file', 'error')
         return redirect(url_for('upload.show_upload_form'))
@@ -35,12 +37,34 @@ def upload_file_page():
     if file and allowed_file(file.filename):
         filename = upload_file(file, return_filename = True)
         session['img_filename'] = filename
-        # Print the current working directory
-        print("Current Working Directory:", os.getcwd())
+        model_name = request.form['model']
+        age = None
+        sex = None
+        local = None
+        if model_name == 'multi-input':
+            age = request.form['age']
+            sex = request.form['sex']
+            local = request.form['localization']
+        prediction =  implement_ML(
+            os.path.join('app/static/img/temp', filename), 
+            model_name = model_name,
+            age = age,
+            sex = sex,
+            local= local) 
 
-        print(filename)
-        prediction =  implement_ML(os.path.join('app/static/img/temp', filename))
         flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
+        # Generate the PDF report
+        pdf_buffer = generate_pdf_report(prediction)
+
+        # Move the buffer position to the beginning
+        pdf_buffer.seek(0)
+
+        # Send the PDF as a response
+        response = make_response(pdf_buffer.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = 'inline; filename=report.pdf'
+
+        return response
     else:
         flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
 

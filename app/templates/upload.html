@@ -3,18 +3,64 @@
 {% block title %}Upload File{% endblock %}
 
 {% block main %}
-   <div class="container mt-5">
-      <h2 class="mb-4">Upload a File</h2>
-      <form method="post" action="/uploader" enctype="multipart/form-data">
-         <div class="mb-3">
-            <label for="file" class="form-label">Choose File</label>
-            <input type="file" class="form-control" id="file" name="file" required>
-         </div>
-         <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
-      {% if img_filename %}
-         <p>Last Uploaded Image (after resizing):</p>
-         <img src="{{ url_for('static', filename=img_filename) }}">
-      {% endif %}
+<div class="container mt-5">
+   <h2 class="mb-4">Upload a File</h2>
+   <form method="post" action="/uploader" enctype="multipart/form-data" class="form-container">
+      <!-- Choose File -->
+      <div class="mb-3">
+         <label for="file" class="form-label">Choose File</label>
+         <input type="file" class="form-control" id="file" name="file" required>
+      </div>
+
+      <!-- Model Selection Dropdown -->
+      <div class="mb-3">
+         <label for="model" class="form-label">Model Selection</label>
+         <select class="form-select" id="model" name="model" required>
+            {% for model_name in model_names %}
+            <option value="{{ model_name }}">{{ model_name }}</option>
+            {% endfor %}
+         </select>
+      </div>
+
+      <!-- Localization Dropdown -->
+      <div class="mb-3">
+         <label for="localization" class="form-label">Localization</label>
+         <select class="form-select" id="localization" name="localization" required>
+            {% for loc in localizations %}
+            <option value="{{ loc }}">{{ loc|capitalize }}</option>
+            {% endfor %}
+         </select>
+      </div>
+
+      <!-- Gender Dropdown -->
+      <div class="mb-3">
+         <label for="gender" class="form-label">Gender</label>
+         <select class="form-select" id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+         </select>
+      </div>
+
+      <!-- Age Input Box -->
+      <div class="mb-3">
+         <label for="age" class="form-label">Age</label>
+         <input type="number" class="form-control" id="age" name="age" min="0" max="120" required>
+      </div>
+
+      <!-- Upload Button -->
+      <button type="submit" class="btn btn-primary">Upload</button>
+   </form>
+
+   {% if img_filename %}
+   <div class="container mt-5 text-center">
+      <div class="row mx-auto">
+         <h3>Last Uploaded Image:</h3>
+      </div>
+      <div class="row justify-content-center mt-4">
+         <img src="{{ url_for('static', filename=img_filename) }}" style="max-width: 50%;">
+      </div>
    </div>
+   {% endif %}
+</div>
 {% endblock %}

@@ -41,3 +41,10 @@ body {
   border: 2px solid #000; /* Black border */
   border-radius: 5px; /* Optional: Add border-radius for rounded corners */
 }
+
+.form-container {
+  background-color: #f8f9fa; /* Light gray background color */
+  border: 1px solid #000; /* Black border */
+  border-radius: 10px; /* Rounded corners */
+  padding: 20px; /* Add padding for better appearance */
+}
