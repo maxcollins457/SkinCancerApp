@@ -23,6 +23,10 @@
                 <a class="nav-link" id="model4-tab" data-toggle="tab" href="#model4" role="tab" aria-controls="model4"
                     aria-selected="false">VGG-16</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="model5-tab" data-toggle="tab" href="#model5" role="tab" aria-controls="model5"
+                    aria-selected="false">MobileNet</a>
+            </li>
         </ul>
     </div>
     <div class="tab-content" id="modelTabsContent">
@@ -40,11 +44,11 @@
                         The Confusion matrix for this architecture can be seen below. False negatives are minimised but
                         there is a 17% false positive rate.
                     </p>
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/bin_model_CM.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/bin_model_CM.png') }}"
                         alt="Confusion matrix for binary ML model">
                 </div>
                 <div class="col">
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/binary_model_plot.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/binary_model_plot.png') }}"
                         alt="Model Plot">
                 </div>
             </div>
@@ -60,12 +64,12 @@
                     <p>
                         The Confusion matrix for this architecture can be seen below.
                     </p>
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/model1_CM.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/model1_CM.png') }}"
                         alt="Confusion matrix for ML model">
                 </div>
 
                 <div class="col">
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/model_plot.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/model_plot.png') }}"
                         alt="Model Plot">
                 </div>
             </div>
@@ -86,19 +90,20 @@
                     <p>
                         The Confusion matrix for this architecture can be seen below.
                     </p>
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/multi_input_model_CM.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/multi_input_model_CM.png') }}"
                         alt="Confusion matrix for binary ML model">
                 </div>
                 <div class="col">
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/multi_input_model_plot.png') }}"
-                        alt="Model Plot">
+                    <img class="img-fluid"
+                        src="{{ url_for('static', filename='img/models/multi_input_model_plot.png') }}" alt="Model Plot">
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="model4" role="tabpanel" aria-labelledby="model4-tab">
             <div class="row mt-4">
                 <div class="col">
-                    <p>This model based on the VGG-16 model developed by Oxford. VGG-16 is a convolutional neural network
+                    <p>This model based on the VGG-16 model developed by Oxford. VGG-16 is a convolutional neural
+                        network
                         that is 16 layers deep. This has been trained on more than a
                         million images from the ImageNet database. The pretrained network can classify images into
                         1000 object categories.</p>
@@ -107,18 +112,52 @@
                     <h2>Model Structure</h2>
                     <p>Using Transfer Learning, this model takes the VGG model and adds a new output layer
                         to adapt it to this problem. Using VGG saves time in training as the model weights have already
-                        been trained. These should perform the feature extraction. 
+                        been trained. These should perform the feature extraction.
                         Then by adding a new output layer, and training this, we can 'transfer' the
                         learning from the general image classifier to this specific problem.</p>
                     <h3>Model Performance</h3>
                     <p>
                         The Confusion matrix for this architecture can be seen below.
                     </p>
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/VGG_model_CM.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/VGG_model_CM.png') }}"
                         alt="Confusion matrix for VGG based model">
                 </div>
                 <div class="col">
-                    <img class="img-fluid" src="{{ url_for('static', filename='img/model/VGG_model_plot.png') }}"
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/VGG_model_plot.png') }}"
+                        alt="Model Plot">
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="model5" role="tabpanel" aria-labelledby="model5-tab">
+            <div class="row mt-4">
+                <div class="col">
+                    <p>MobileNet is TensorFlow's first mobile computer vision model. It uses depthwise separable
+                        convolutions to significantly reduce the number of parameters compared to other networks with
+                        regular convolutions and the same depth in the nets. This results in lightweight deep neural
+                        networks.</p>
+                    <p>Available from: <a href="https://keras.io/api/applications/mobilenet/"
+                            target="_blank">MobileNet</a>.</p>
+                    <h2>Model Structure</h2>
+                    <p>Using Transfer Learning, this model takes the MobileNet model and adds a new output layer
+                        to adapt it to this problem. Using MobileNet saves time in training as the model weights have
+                        already
+                        been trained. These should perform the feature extraction.
+                        Then by adding a new output layer, and training this, we can 'transfer' the
+                        learning from the general image classifier to this specific problem.
+                        This model also uses class weights in the training process. This helps with the imablanced
+                        dataset. Class weights are used to assign different weights to different classes during
+                        training. By giving higher weights to the minority class and lower weights to the majority
+                        class, the model is encouraged to pay more attention to the minority class and make better
+                        predictions for it. </p>
+                    <h3>Model Performance</h3>
+                    <p>
+                        The Confusion matrix for this architecture can be seen below.
+                    </p>
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/tripleFineTuneWeightedMobileNet_CM_perc.png') }}"
+                        alt="Confusion matrix for MobileNet based model">
+                </div>
+                <div class="col">
+                    <img class="img-fluid" src="{{ url_for('static', filename='img/models/VGG_model_plot.png') }}"
                         alt="Model Plot">
                 </div>
             </div>

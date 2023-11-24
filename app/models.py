@@ -15,17 +15,20 @@ ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
 
 CNN_model = load_model('app/networks/model.h5')
-# Bin_model = load_model('app/networks/bin_model.h5')
+Bin_model = load_model('app/networks/binary_model.h5')
 Multi_input_model = load_model('app/networks/multi_input_model.h5')
+VGG_model = load_model('app/networks/VGG_model.h5')
+MobileNet_model = load_model('app/networks/MobileNet.h5')
+
 ML_MODELS = {
     'CNN': {
         'model': CNN_model,
         'inputs': ['img']
     },
-    # 'Binary': {
-    #     'model': Bin_model,
-    #     'inputs': ['img']
-    # },
+    'Binary': {
+        'model': Bin_model,
+        'inputs': ['img']
+    },
     'Multi-input': {
         'model': Multi_input_model,
         'inputs': ['img', 'age', 'localization', 'sex'],
@@ -46,14 +49,14 @@ ML_MODELS = {
                         'sex_male',
                         'sex_unknown']
     },
-    # 'VGG': {
-    #     'model': VGG_model,
-    #     'inputs': ['img']
-    # },
-    # 'MobileNet': {
-    #     'model': MobileNet_model,
-    #     'inputs': ['img']
-    # }
+    'VGG': {
+        'model': VGG_model,
+        'inputs': ['img']
+    },
+    'MobileNet': {
+        'model': MobileNet_model,
+        'inputs': ['img']
+    }
 }
 
 Code_to_cell = {0: 'Actinic keratoses',
