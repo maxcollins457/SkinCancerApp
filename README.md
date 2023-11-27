@@ -78,11 +78,11 @@ SkinCancerApp/
 
 │   ├── data/
 
-│   │   └── CancerData.csv
+│   │   └── `CancerData.csv`
 
 │   ├── networks/
 
-│   │   └── h5 keras models
+│   │   └── `h5 keras models`
 
 │   ├── static/
 
@@ -94,15 +94,15 @@ SkinCancerApp/
 
 │   ├── templates/
 
-│   │   └── html templates
+│   │   └── `html templates`
 
 │   └── views/
 
-│       └── flask views
+│       └── `flask views`
 
 │   ├── `__init__.py`
 
-│   ├── models.py
+│   ├── `models.py`
 
 │
 
@@ -112,11 +112,11 @@ SkinCancerApp/
 
 │
 
-├── requirements.txt
+├── `requirements.txt`
 
-├── README.md
+├── `README.md`
 
-└── main.py
+└── `main.py`
 
 
 
