@@ -100,11 +100,9 @@ SkinCancerApp/
 
 │       └── flask views
 
-│
+│   ├── `__init__.py`
 
-├── \__init__.py
-
-├── models.py
+│   ├── models.py
 
 │
 
