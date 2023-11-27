@@ -58,12 +58,6 @@ The Skin Lesion Classification App is designed to assist users in classifying sk
 
 3. Explore the different tabs for image classification, EDA, and model comparison.
 
-### Project Struture
-
-Certainly! Here's an example of a project structure in Markdown:
-
-markdown
-Copy code
 ### Project Structure
 
 This is a brief overview of the project structure.
@@ -108,7 +102,7 @@ SkinCancerApp/
 
 ├── COLAB NOTEBOOKS/
 
-│   └── ipynb notebooks
+│   └── `ipynb notebooks`
 
 │
 
