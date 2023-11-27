@@ -73,27 +73,29 @@ This is a brief overview of the project structure.
 SkinCancerApp/
 │
 ├── app/
-│ ├── data/
-│ │ └── CancerData.csv
-│ ├── networks/
-│ │ └── h5 keras models
-│ ├── static/
-│ │ ├── css/
-│ │ ├── img/
-│ │ └── js/
-│ ├── templates/
-│ │ └──html templates
-│ └── views/
-│ │ └──flask views
-├── __init__.py
-└── models.py
+│   ├── data/
+│   │   └── CancerData.csv
+│   ├── networks/
+│   │   └── h5 keras models
+│   ├── static/
+│   │   ├── css/
+│   │   ├── img/
+│   │   └── js/
+│   ├── templates/
+│   │   └── html templates
+│   └── views/
+│       └── flask views
+│
+├── \__init__.py
+├── models.py
 │
 ├── COLAB NOTEBOOKS/
-│ └── ipynb notebooks
+│   └── ipynb notebooks
 │
 ├── requirements.txt
 ├── README.md
 └── main.py
+
 
 
 #### Description
