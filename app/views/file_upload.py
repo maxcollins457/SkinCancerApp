@@ -46,8 +46,10 @@ def upload_file_page():
             local = request.form['localization']
 
         session['ML_inputs'] = (model_name,age, sex, local)
+
+        img_filename = 'img/temp/' + filename
         return render_template('results.html', 
-                        img_filename = filename)
+                        img_filename = img_filename)
     else:
         flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
 
@@ -58,7 +60,7 @@ def upload_file_page():
 @upload_bp.route('/results')
 def results():
     model_name, age, sex, local = session['ML_inputs']
-    filename = session['img_filename'] 
+    filename =  session['img_filename'] 
     prediction =  implement_ML(
             os.path.join('app/static/img/temp', filename), 
             model_name = model_name,
