@@ -6,6 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
 import seaborn as sns
 import pandas as pd
 
@@ -66,6 +67,20 @@ Code_to_cell = {0: 'Actinic keratoses',
  4: 'Melanocytic nevi',
  5: 'Melanoma',
  6: 'Vascular lesions'}
+
+def clear_temp_directory(app):
+    temp_directory = os.path.join(app.root_path, 'static', 'img', 'temp')
+
+    # Check if the directory exists
+    if os.path.exists(temp_directory):
+        # Loop through files in the directory and remove them
+        for filename in os.listdir(temp_directory):
+            file_path = os.path.join(temp_directory, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(f"Error removing file {file_path}: {e}")
 
 
 def allowed_file(filename):
@@ -132,9 +147,9 @@ def make_prediciton(input: list, model_name = 'CNN', age= 51.863828077927295, se
     prediction_dict = { Code_to_cell.get(i):100*pred for i , pred in enumerate(prediction[0])}
     return prediction_dict
 
-def implement_ML(path):
+def implement_ML(path , model_name = 'CNN', age= 51.863828077927295, sex = 'male', local = 'back'):
     input = img_to_input(path)
-    return make_prediciton(input)
+    return make_prediciton(input, model_name, age, sex, local)
 
 
 def generate_pdf_report(class_probabilities):
@@ -188,7 +203,9 @@ def generate_seaborn_bar_chart(class_probabilities, buffer):
     df = df.sort_values(by='Probability', ascending=False)
 
     # Create a horizontal bar chart using Seaborn
+    plt.switch_backend('Agg')
     sns.set(style="whitegrid")
+
     plt.figure(figsize=(8, 4))
 
     # Create the bar plot
