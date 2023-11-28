@@ -1,3 +1,6 @@
+from tensorflow.keras.models import load_model
+import pandas as pd
+import seaborn as sns
 import numpy as np
 from PIL import Image
 from werkzeug.utils import secure_filename
@@ -7,10 +10,7 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
-import seaborn as sns
-import pandas as pd
 
-from tensorflow.keras.models import load_model
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
@@ -25,24 +25,19 @@ ML_MODELS = {
     'CNN': {
         'model': CNN_model,
         'inputs': ['img'],
-        'codes_dict' : {0: 'Actinic keratoses',
-                        1: 'Basal cell carcinoma',
-                        2: 'Benign keratosis-like lesions ',
-                        3: 'Dermatofibroma',
-                        4: 'Melanocytic nevi',
-                        5: 'Melanoma',
-                        6: 'Vascular lesions'}
-            },
+        'codes_dict': {0: 'Actinic keratoses',
+                       1: 'Basal cell carcinoma',
+                       2: 'Benign keratosis-like lesions ',
+                       3: 'Dermatofibroma',
+                       4: 'Melanocytic nevi',
+                       5: 'Melanoma',
+                       6: 'Vascular lesions'}
+    },
     'Binary': {
         'model': Bin_model,
         'inputs': ['img'],
-        'codes_dict' : {0: 'Actinic keratoses',
-                        1: 'Basal cell carcinoma',
-                        2: 'Benign keratosis-like lesions ',
-                        3: 'Dermatofibroma',
-                        4: 'Melanocytic nevi',
-                        5: 'Melanoma',
-                        6: 'Vascular lesions'}
+        'codes_dict': {0: 'Non-cancerous',
+                       1: 'Cancerous'}
     },
     'Multi-input': {
         'model': Multi_input_model,
@@ -63,38 +58,37 @@ ML_MODELS = {
                         'localization_upper extremity',
                         'sex_male',
                         'sex_unknown'],
-        'codes_dict' : {0: 'Actinic keratoses',
-                        1: 'Basal cell carcinoma',
-                        2: 'Benign keratosis-like lesions ',
-                        3: 'Dermatofibroma',
-                        4: 'Melanocytic nevi',
-                        5: 'Melanoma',
-                        6: 'Vascular lesions'}
+        'codes_dict': {0: 'Actinic keratoses',
+                       1: 'Basal cell carcinoma',
+                       2: 'Benign keratosis-like lesions ',
+                       3: 'Dermatofibroma',
+                       4: 'Melanocytic nevi',
+                       5: 'Melanoma',
+                       6: 'Vascular lesions'}
     },
     'VGG': {
         'model': VGG_model,
         'inputs': ['img'],
-        'codes_dict' : {0: 'Actinic keratoses',
-                        1: 'Basal cell carcinoma',
-                        2: 'Benign keratosis-like lesions ',
-                        3: 'Dermatofibroma',
-                        4: 'Melanocytic nevi',
-                        5: 'Melanoma',
-                        6: 'Vascular lesions'}
+        'codes_dict': {0: 'Melanocytic nevi',
+                       1: 'Melanoma',
+                       2: 'Benign keratosis-like lesions ',
+                       3: 'Basal cell carcinoma',
+                       4: 'Actinic keratoses',
+                       5: 'Vascular lesions',
+                       6: 'Dermatofibroma'}
     },
     'MobileNet': {
         'model': MobileNet_model,
         'inputs': ['img'],
-        'codes_dict' : {0: 'Actinic keratoses',
-                        1: 'Basal cell carcinoma',
-                        2: 'Benign keratosis-like lesions ',
-                        3: 'Dermatofibroma',
-                        4: 'Melanocytic nevi',
-                        5: 'Melanoma',
-                        6: 'Vascular lesions'}
+        'codes_dict': {0: 'Melanocytic nevi',
+                       1: 'Melanoma',
+                       2: 'Benign keratosis-like lesions ',
+                       3: 'Basal cell carcinoma',
+                       4: 'Actinic keratoses',
+                       5: 'Vascular lesions',
+                       6: 'Dermatofibroma'}
     }
 }
-
 
 
 def clear_temp_directory(app):
@@ -115,9 +109,11 @@ def clear_temp_directory(app):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def resize_img(image,  dims = (100,75)):
+
+def resize_img(image,  dims=(100, 75)):
     img = Image.open(image)
     return img.resize(dims, Image.LANCZOS)
+
 
 def upload_file(file, return_filename=False):
     filename = secure_filename(file.filename)
@@ -133,7 +129,7 @@ def upload_file(file, return_filename=False):
         return filename
 
 
-def myScaler(x: list, m= 159.88411714650246, s = 46.45448942251337):
+def myScaler(x: list, m=159.88411714650246, s=46.45448942251337):
     return (np.asarray(x)-m)/s
 
 
@@ -141,11 +137,11 @@ def img_to_input(path: str):
     img = resize_img(path)
     return list(img.getdata())
 
-def multi_input_preprocess(age , sex , local ):
+
+def multi_input_preprocess(age, sex, local):
     mean_age = 51.863828077927295
 
-    scaled_age =  np.asarray(age)/mean_age
-
+    scaled_age = np.asarray(age)/mean_age
 
     feature_list = ML_MODELS['multi-input']['cat_dummies']
     cat_df = pd.DataFrame(0, index=np.arange(1), columns=feature_list)
@@ -153,31 +149,33 @@ def multi_input_preprocess(age , sex , local ):
     local = 'localization_' + local
     sex = 'sex_' + sex
     for col in cat_df.columns:
-      if col == local or col == sex:
-        cat_df[col] = 1
+        if col == local or col == sex:
+            cat_df[col] = 1
 
     dummies = np.asarray(cat_df)
-    scaled_age = scaled_age.reshape(-1,1)
+    scaled_age = scaled_age.reshape(-1, 1)
 
-    x_num = np.concatenate((scaled_age, dummies), axis = 1)
+    x_num = np.concatenate((scaled_age, dummies), axis=1)
     return x_num
 
 
-def make_prediciton(input: list, model_name = 'CNN', age= 51.863828077927295, sex = 'male', local = 'back'):
+def make_prediciton(input: list, model_name='CNN', age=51.863828077927295, sex='male', local='back'):
     model = ML_MODELS[model_name]['model']
     Code_to_cell = ML_MODELS[model_name]['codes_dict']
     scaled_input = myScaler(input)
-    x_img = (scaled_input).reshape(1, *(75,100,3))
+    x_img = (scaled_input).reshape(1, *(75, 100, 3))
 
     if model_name == 'Multi-input':
         x_num = multi_input_preprocess(age, sex, local)
         prediction = model.predict(x_num, x_img)
     else:
         prediction = model.predict(x_img)
-    prediction_dict = { Code_to_cell.get(i):100*pred for i , pred in enumerate(prediction[0])}
+    prediction_dict = {Code_to_cell.get(
+        i): 100*pred for i, pred in enumerate(prediction[0])}
     return prediction_dict
 
-def implement_ML(path , model_name = 'CNN', age= 51.863828077927295, sex = 'male', local = 'back'):
+
+def implement_ML(path, model_name='CNN', age=51.863828077927295, sex='male', local='back'):
     input = img_to_input(path)
     return make_prediciton(input, model_name, age, sex, local)
 
@@ -196,7 +194,7 @@ def generate_pdf_report(class_probabilities):
     pdf.drawString(100, 750, "Classification Report")
     pdf.drawString(100, 730, "-----------------------------------")
 
-    # Save the bar chart as an image file 
+    # Save the bar chart as an image file
     pdf_chart_buffer = BytesIO()
     generate_seaborn_bar_chart(class_probabilities, pdf_chart_buffer)
     pdf_chart_buffer.seek(0)
@@ -226,7 +224,8 @@ def generate_pdf_report(class_probabilities):
 
 def generate_seaborn_bar_chart(class_probabilities, buffer):
     # Create a DataFrame from the class_probabilities dictionary
-    data = {'Class': list(class_probabilities.keys()), 'Probability': list(class_probabilities.values())}
+    data = {'Class': list(class_probabilities.keys()),
+            'Probability': list(class_probabilities.values())}
     df = pd.DataFrame(data)
 
     # Order the DataFrame by probability in descending order
