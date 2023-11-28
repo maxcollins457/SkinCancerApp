@@ -24,11 +24,25 @@ MobileNet_model = load_model('app/networks/MobileNet.h5')
 ML_MODELS = {
     'CNN': {
         'model': CNN_model,
-        'inputs': ['img']
-    },
+        'inputs': ['img'],
+        'codes_dict' : {0: 'Actinic keratoses',
+                        1: 'Basal cell carcinoma',
+                        2: 'Benign keratosis-like lesions ',
+                        3: 'Dermatofibroma',
+                        4: 'Melanocytic nevi',
+                        5: 'Melanoma',
+                        6: 'Vascular lesions'}
+            },
     'Binary': {
         'model': Bin_model,
-        'inputs': ['img']
+        'inputs': ['img'],
+        'codes_dict' : {0: 'Actinic keratoses',
+                        1: 'Basal cell carcinoma',
+                        2: 'Benign keratosis-like lesions ',
+                        3: 'Dermatofibroma',
+                        4: 'Melanocytic nevi',
+                        5: 'Melanoma',
+                        6: 'Vascular lesions'}
     },
     'Multi-input': {
         'model': Multi_input_model,
@@ -48,25 +62,40 @@ ML_MODELS = {
                         'localization_unknown',
                         'localization_upper extremity',
                         'sex_male',
-                        'sex_unknown']
+                        'sex_unknown'],
+        'codes_dict' : {0: 'Actinic keratoses',
+                        1: 'Basal cell carcinoma',
+                        2: 'Benign keratosis-like lesions ',
+                        3: 'Dermatofibroma',
+                        4: 'Melanocytic nevi',
+                        5: 'Melanoma',
+                        6: 'Vascular lesions'}
     },
     'VGG': {
         'model': VGG_model,
-        'inputs': ['img']
+        'inputs': ['img'],
+        'codes_dict' : {0: 'Actinic keratoses',
+                        1: 'Basal cell carcinoma',
+                        2: 'Benign keratosis-like lesions ',
+                        3: 'Dermatofibroma',
+                        4: 'Melanocytic nevi',
+                        5: 'Melanoma',
+                        6: 'Vascular lesions'}
     },
     'MobileNet': {
         'model': MobileNet_model,
-        'inputs': ['img']
+        'inputs': ['img'],
+        'codes_dict' : {0: 'Actinic keratoses',
+                        1: 'Basal cell carcinoma',
+                        2: 'Benign keratosis-like lesions ',
+                        3: 'Dermatofibroma',
+                        4: 'Melanocytic nevi',
+                        5: 'Melanoma',
+                        6: 'Vascular lesions'}
     }
 }
 
-Code_to_cell = {0: 'Actinic keratoses',
- 1: 'Basal cell carcinoma',
- 2: 'Benign keratosis-like lesions ',
- 3: 'Dermatofibroma',
- 4: 'Melanocytic nevi',
- 5: 'Melanoma',
- 6: 'Vascular lesions'}
+
 
 def clear_temp_directory(app):
     temp_directory = os.path.join(app.root_path, 'static', 'img', 'temp')
@@ -136,6 +165,7 @@ def multi_input_preprocess(age , sex , local ):
 
 def make_prediciton(input: list, model_name = 'CNN', age= 51.863828077927295, sex = 'male', local = 'back'):
     model = ML_MODELS[model_name]['model']
+    Code_to_cell = ML_MODELS[model_name]['codes_dict']
     scaled_input = myScaler(input)
     x_img = (scaled_input).reshape(1, *(75,100,3))
 
