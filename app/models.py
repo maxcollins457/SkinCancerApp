@@ -1,4 +1,3 @@
-from tensorflow.keras.models import load_model
 import pandas as pd
 import seaborn as sns
 import numpy as np
@@ -10,16 +9,15 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
-
+import tensorflow as tf
 
 ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
 
-
-CNN_model = load_model('app/networks/model.h5')
-Bin_model = load_model('app/networks/binary_model.h5')
-Multi_input_model = load_model('app/networks/multi_input_model.h5')
-VGG_model = load_model('app/networks/VGG_model.h5')
-MobileNet_model = load_model('app/networks/MobileNet.h5')
+CNN_model = tf.keras.models.load_model('app/networks/model.h5')
+Bin_model = tf.keras.models.load_model('app/networks/binary_model.h5')
+Multi_input_model = tf.keras.models.load_model('app/networks/multi_input_model.h5')
+VGG_model = tf.keras.models.load_model('app/networks/VGG_model.h5')
+MobileNet_model = tf.keras.models.load_model('app/networks/MobileNet.h5')
 
 ML_MODELS = {
     'CNN': {
