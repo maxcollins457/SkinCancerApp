@@ -19,6 +19,7 @@ def show_upload_form():
                            localizations=localizations,
                            model_names = model_names)
 
+
 @upload_bp.route('/uploader', methods=['POST'])
 def upload_file_page():
     session['img_path'] = None
@@ -27,8 +28,6 @@ def upload_file_page():
         return redirect(url_for('upload.show_upload_form'))
 
     file = request.files['file']
-
-    
 
     if file.filename == '':
         flash('No selected file', 'error')
@@ -41,31 +40,44 @@ def upload_file_page():
         age = None
         sex = None
         local = None
-        if model_name == 'multi-input':
+        if model_name == 'Multi-input':
             age = request.form['age']
             sex = request.form['sex']
             local = request.form['localization']
-        prediction =  implement_ML(
+
+        session['ML_inputs'] = (model_name,age, sex, local)
+        return render_template('results.html', 
+                        img_filename = filename)
+    else:
+        flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
+
+    return redirect(url_for('upload.show_upload_form'))
+
+
+
+@upload_bp.route('/results')
+def results():
+    model_name, age, sex, local = session['ML_inputs']
+    filename = session['img_filename'] 
+    prediction =  implement_ML(
             os.path.join('app/static/img/temp', filename), 
             model_name = model_name,
             age = age,
             sex = sex,
             local= local) 
 
-        flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
-        # Generate the PDF report
-        pdf_buffer = generate_pdf_report(prediction)
+    flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
+    # Generate the PDF report
+    pdf_buffer = generate_pdf_report(prediction)
 
-        # Move the buffer position to the beginning
-        pdf_buffer.seek(0)
+    # Move the buffer position to the beginning
+    pdf_buffer.seek(0)
 
-        # Send the PDF as a response
-        response = make_response(pdf_buffer.getvalue())
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'inline; filename=report.pdf'
+    # Send the PDF as a response
+    response = make_response(pdf_buffer.getvalue())
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=report.pdf'
 
-        return response
-    else:
-        flash(f"Invalid file format. Allowed formats are: {', '.join(ALLOWED_EXTENSIONS)}", 'danger')
+    return response
 
-    return redirect(url_for('upload.show_upload_form'))
+

@@ -1,0 +1,33 @@
+{% extends 'base-template.html' %}
+
+{% block title %}Results{% endblock %}
+
+{% block main %}
+<div class="container mt-5">
+    <h1>Results</h1>
+    {% if img_filename %}
+
+    <div class="container mt-5 text-center">
+        <div class="row mx-auto">
+            <h3>Last Uploaded Image:</h3>
+        </div>
+        <div class="row justify-content-center mt-4">
+            <img src="{{ url_for('static', filename=img_filename) }}" style="max-width: 50%;">
+        </div>
+    </div>
+
+    <!-- Use an <a> tag to open results in a new tab -->
+    <div class="container mt-5 text-center">
+        <a href="{{ url_for('upload.results') }}" target="_blank" class="btn btn-primary">Open Results in New Tab</a>
+    </div>
+    {% else %}
+    <!-- Display a warning message if no file is uploaded -->
+    <div class="container mt-5 text-center">
+        <div class="alert alert-warning" role="alert">
+            No file uploaded. Please upload a file before accessing the results.
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
