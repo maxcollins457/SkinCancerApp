@@ -9,6 +9,7 @@ from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import matplotlib.pyplot as plt
 
+
 from config import ALLOWED_EXTENSIONS, ML_MODELS
 
 plt.switch_backend('Agg')
@@ -116,15 +117,16 @@ def classification_text(class_probabilities, threshold=30):
     else:
         class_text.append('Prediction confidence: Low (less than 50%)')
         
-    likely_classes = [class_label for prob, class_label in sorted_probs[1:] if prob > threshold]
-    if len(likely_classes) > 0:
+    if len(classes) > 2:
+        likely_classes = [class_label for prob, class_label in sorted_probs[1:] if prob > threshold]
+        if len(likely_classes) > 0:
+            class_text.append('')
+            class_text.append(f'Suggested likely classes with probability > {threshold}% are:')
+            class_text.append(f'{", ".join(likely_classes)}')
         class_text.append('')
-        class_text.append('Suggested likely classes with probability > {threshold}% are:')
-        class_text.append(f'{", ".join(likely_classes)}')
-    class_text.append('')
-    class_text.append('Top 3 Classes:')
-    for prob, class_label in sorted_probs[:3]:
-        class_text.append(f'----->  {class_label}: {prob:.1f}%')
+        class_text.append('Top 3 Classes:')
+        for prob, class_label in sorted_probs[:3]:
+            class_text.append(f'----->  {class_label}: {prob:.1f}%')
 
     return class_text
 
@@ -139,8 +141,11 @@ def generate_seaborn_bar_chart(class_probabilities, buffer):
     sns.set(style="whitegrid")
     plt.figure(figsize=(8, 4))
     sns.barplot(x='Probability', y='Class', data=df, color='skyblue')
+    plt.xlim([0,100])
     plt.savefig(buffer, format='png', bbox_inches='tight')
     plt.close()
+
+
 
 
 def generate_pdf_report(class_probabilities):

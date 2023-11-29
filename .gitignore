@@ -5,3 +5,4 @@ __pycache__
 uploads
 img
 chart_image.png
+*.pptx
