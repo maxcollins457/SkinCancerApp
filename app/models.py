@@ -8,85 +8,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from io import BytesIO
 import matplotlib.pyplot as plt
+
+from config import ALLOWED_EXTENSIONS, ML_MODELS
+
 plt.switch_backend('Agg')
-import tensorflow as tf
-
-ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
-
-CNN_model = tf.keras.models.load_model('app/networks/model.h5')
-Bin_model = tf.keras.models.load_model('app/networks/binary_model.h5')
-Multi_input_model = tf.keras.models.load_model('app/networks/multi_input_model.h5')
-VGG_model = tf.keras.models.load_model('app/networks/VGG_model.h5')
-MobileNet_model = tf.keras.models.load_model('app/networks/MobileNet.h5')
-
-ML_MODELS = {
-    'CNN': {
-        'model': CNN_model,
-        'inputs': ['img'],
-        'codes_dict': {0: 'Actinic keratoses',
-                       1: 'Basal cell carcinoma',
-                       2: 'Benign keratosis-like lesions ',
-                       3: 'Dermatofibroma',
-                       4: 'Melanocytic nevi',
-                       5: 'Melanoma',
-                       6: 'Vascular lesions'}
-    },
-    'Binary': {
-        'model': Bin_model,
-        'inputs': ['img'],
-        'codes_dict': {0: 'Non-cancerous',
-                       1: 'Cancerous'}
-    },
-    'Multi-input': {
-        'model': Multi_input_model,
-        'inputs': ['img', 'age', 'localization', 'sex'],
-        'cat_dummies': ['localization_acral',
-                        'localization_back',
-                        'localization_chest',
-                        'localization_ear',
-                        'localization_face',
-                        'localization_foot',
-                        'localization_genital',
-                        'localization_hand',
-                        'localization_lower extremity',
-                        'localization_neck',
-                        'localization_scalp',
-                        'localization_trunk',
-                        'localization_unknown',
-                        'localization_upper extremity',
-                        'sex_male',
-                        'sex_unknown'],
-        'codes_dict': {0: 'Actinic keratoses',
-                       1: 'Basal cell carcinoma',
-                       2: 'Benign keratosis-like lesions ',
-                       3: 'Dermatofibroma',
-                       4: 'Melanocytic nevi',
-                       5: 'Melanoma',
-                       6: 'Vascular lesions'}
-    },
-    'VGG': {
-        'model': VGG_model,
-        'inputs': ['img'],
-        'codes_dict': {0: 'Melanocytic nevi',
-                       1: 'Melanoma',
-                       2: 'Benign keratosis-like lesions ',
-                       3: 'Basal cell carcinoma',
-                       4: 'Actinic keratoses',
-                       5: 'Vascular lesions',
-                       6: 'Dermatofibroma'}
-    },
-    'MobileNet': {
-        'model': MobileNet_model,
-        'inputs': ['img'],
-        'codes_dict': {0: 'Melanocytic nevi',
-                       1: 'Melanoma',
-                       2: 'Benign keratosis-like lesions ',
-                       3: 'Basal cell carcinoma',
-                       4: 'Actinic keratoses',
-                       5: 'Vascular lesions',
-                       6: 'Dermatofibroma'}
-    }
-}
 
 
 def clear_temp_directory(app):
@@ -136,12 +61,16 @@ def img_to_input(path: str):
     return list(img.getdata())
 
 
-def multi_input_preprocess(age, sex, local):
+def multi_input_preprocess(age: int, sex: str, local:str):
     mean_age = 51.863828077927295
-
+    try:
+        age = int(age)
+    except Exception as e:
+        raise ValueError(f"Error converting age to integer: {e}")
+    
     scaled_age = np.asarray(age)/mean_age
 
-    feature_list = ML_MODELS['multi-input']['cat_dummies']
+    feature_list = ML_MODELS['Multi-input']['cat_dummies']
     cat_df = pd.DataFrame(0, index=np.arange(1), columns=feature_list)
 
     local = 'localization_' + local
@@ -165,7 +94,7 @@ def make_prediciton(input: list, model_name='CNN', age=51.863828077927295, sex='
 
     if model_name == 'Multi-input':
         x_num = multi_input_preprocess(age, sex, local)
-        prediction = model.predict(x_num, x_img)
+        prediction = model.predict([x_num, x_img])
     else:
         prediction = model.predict(x_img)
     prediction_dict = {Code_to_cell.get(
@@ -176,6 +105,37 @@ def make_prediciton(input: list, model_name='CNN', age=51.863828077927295, sex='
 def implement_ML(path, model_name='CNN', age=51.863828077927295, sex='male', local='back'):
     input = img_to_input(path)
     return make_prediciton(input, model_name, age, sex, local)
+
+
+def classification_text(class_probabilities, threshold=30):
+    classes = list(class_probabilities.keys())
+    probs = list(class_probabilities.values())
+    sorted_probs = sorted(zip(probs, classes), key=lambda pair: pair[0], reverse=True)
+
+    max_prob, max_prob_class = sorted_probs[0]
+    
+    class_text = [f'Most likely class is {max_prob_class} with a certainty of {max_prob:.1f}%']
+    
+    if max_prob > 70:
+        class_text.append('Prediction confidence: High (more than 70%)')
+    elif max_prob > 50:
+        class_text.append('Prediction confidence: Moderate (50% - 70%)')
+    else:
+        class_text.append('Prediction confidence: Low (less than 50%)')
+        
+    likely_classes = [class_label for prob, class_label in sorted_probs[1:] if prob > threshold]
+    if len(likely_classes) > 0:
+        class_text.append('')
+        class_text.append('Suggested likely classes with probability > {threshold}% are:')
+        class_text.append(f'{", ".join(likely_classes)}')
+    # Add information about top classes and their probabilities
+    class_text.append('')
+    class_text.append('Top 3 Classes:')
+    for prob, class_label in sorted_probs[:3]:
+        class_text.append(f'----->  {class_label}: {prob:.1f}%')
+
+    return class_text
+
 
 
 def generate_pdf_report(class_probabilities):
@@ -209,8 +169,10 @@ def generate_pdf_report(class_probabilities):
 
     # Add classification information
     pdf.drawString(100, 480, "Classification Information:")
-    y_position = 460
+    classification_lines = classification_text(class_probabilities)
 
+    for i, line in enumerate(classification_lines):
+        pdf.drawString(100, 480-20*(i+1), line)
     # Save the PDF to the buffer
     pdf.save()
 

@@ -67,8 +67,6 @@ def results():
             age = age,
             sex = sex,
             local= local) 
-
-    flash(f'File uploaded successfully. Prediction: {prediction}', 'success')
     # Generate the PDF report
     pdf_buffer = generate_pdf_report(prediction)
 

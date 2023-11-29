@@ -35,7 +35,7 @@
       <!-- Gender Dropdown -->
       <div class="mb-3">
          <label for="sex" class="form-label">Sex</label>
-         <select class="form-select" id="gender" name="gender" required>
+         <select class="form-select" id="gender" name="sex" required>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -51,5 +51,22 @@
       <!-- Upload Button -->
       <button type="submit" class="btn btn-primary">Upload</button>
    </form>
+
+   <script>
+      // Function to toggle the 'required' attribute for the Age input based on the selected model
+      function toggleAgeRequired() {
+         var modelDropdown = document.getElementById('model');
+         var ageInput = document.getElementById('age');
+
+         // If 'multi-input' is selected, make Age required; otherwise, remove the required attribute
+         ageInput.required = (modelDropdown.value === 'Multi-input');
+      }
+
+      // Add an event listener to the Model Selection dropdown to call the function when the value changes
+      document.getElementById('model').addEventListener('change', toggleAgeRequired);
+
+      // Call the function on page load to set the initial state
+      toggleAgeRequired();
+   </script>
 </div>
 {% endblock %}
