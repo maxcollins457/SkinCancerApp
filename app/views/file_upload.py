@@ -61,14 +61,15 @@ def upload_file_page():
 def results():
     model_name, age, sex, local = session['ML_inputs']
     filename =  session['img_filename'] 
+    file_path = os.path.join('app/static/img/temp', filename)
     prediction =  implement_ML(
-            os.path.join('app/static/img/temp', filename), 
+            file_path, 
             model_name = model_name,
             age = age,
             sex = sex,
             local= local) 
     # Generate the PDF report
-    pdf_buffer = generate_pdf_report(prediction)
+    pdf_buffer = generate_pdf_report(prediction, file_path)
 
     # Move the buffer position to the beginning
     pdf_buffer.seek(0)

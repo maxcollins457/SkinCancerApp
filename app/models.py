@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 
 from config import ALLOWED_EXTENSIONS, ML_MODELS
+from app.gradcam import GradCAM
 
 plt.switch_backend('Agg')
 
@@ -146,9 +147,34 @@ def generate_seaborn_bar_chart(class_probabilities, buffer):
     plt.close()
 
 
+def add_seaborn_chart_to_pdf(class_probabilities, pdf, pos):
+    pdf_chart_buffer = BytesIO()
+    generate_seaborn_bar_chart(class_probabilities, pdf_chart_buffer)
+    pdf_chart_buffer.seek(0)
+
+    chart_image_filename = 'app/static/img/temp/chart_image.png'
+
+    with open(chart_image_filename, 'wb') as chart_image_file:
+        chart_image_file.write(pdf_chart_buffer.read())
+    posx, posy = pos
+    pdf.drawInlineImage(chart_image_filename, posx, posy, width=440, height=188)
 
 
-def generate_pdf_report(class_probabilities):
+def add_gradcam_chart_to_pdf(model_name, img_path, pdf, pos):
+    gradcam = GradCAM(model_name=model_name) 
+    pdf_chart_buffer = BytesIO()
+    gradcam.write_gradcam_to_buffer(buffer = pdf_chart_buffer, img_path = img_path) 
+    pdf_chart_buffer.seek(0)
+
+    chart_image_filename = 'app/static/img/temp/gradcam.png'
+
+    with open(chart_image_filename, 'wb') as chart_image_file:
+        chart_image_file.write(pdf_chart_buffer.read())
+    posx, posy = pos
+    pdf.drawInlineImage(chart_image_filename, posx, posy, width=492, height=398)
+
+
+def generate_pdf_report(class_probabilities, img_path, model_name = 'VGG'):
     pdf_buffer = BytesIO()
     pdf = canvas.Canvas(pdf_buffer, pagesize=letter)
     pdf.setFont("Helvetica", 12)
@@ -156,22 +182,18 @@ def generate_pdf_report(class_probabilities):
     pdf.drawString(100, 750, "Classification Report")
     pdf.drawString(100, 730, "-----------------------------------")
 
-    pdf_chart_buffer = BytesIO()
-    generate_seaborn_bar_chart(class_probabilities, pdf_chart_buffer)
-    pdf_chart_buffer.seek(0)
-
-    chart_image_filename = 'chart_image.png'
-
-    with open(chart_image_filename, 'wb') as chart_image_file:
-        chart_image_file.write(pdf_chart_buffer.read())
-
-    pdf.drawInlineImage(chart_image_filename, 100, 500, width=400, height=200)
+    add_seaborn_chart_to_pdf(class_probabilities, pdf, (100, 500))
 
     pdf.drawString(100, 480, "Classification Information:")
     classification_lines = classification_text(class_probabilities)
 
     for i, line in enumerate(classification_lines):
         pdf.drawString(100, 480-20*(i+1), line)
+
+    pdf.showPage()
+    pdf.drawString(100, 750, "GradCam")
+    pdf.drawString(100, 730, "-----------------------------------")
+    add_gradcam_chart_to_pdf(model_name, img_path, pdf, (100, 500))    
     pdf.save()
     pdf_buffer.seek(0)
     return pdf_buffer
