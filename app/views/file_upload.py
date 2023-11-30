@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session, make_response
 from app.models import allowed_file, ALLOWED_EXTENSIONS, upload_file, implement_ML, generate_pdf_report, get_localizations, ML_MODELS
 import os
-from io import BytesIO
 
 upload_bp = Blueprint('upload', __name__)
 

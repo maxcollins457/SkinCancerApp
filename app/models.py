@@ -193,7 +193,7 @@ def generate_pdf_report(class_probabilities, img_path, model_name = 'VGG'):
     pdf.showPage()
     pdf.drawString(100, 750, "GradCam")
     pdf.drawString(100, 730, "-----------------------------------")
-    add_gradcam_chart_to_pdf(model_name, img_path, pdf, (100, 500))    
+    add_gradcam_chart_to_pdf(model_name, img_path, pdf, (100, 300))    
     pdf.save()
     pdf_buffer.seek(0)
     return pdf_buffer

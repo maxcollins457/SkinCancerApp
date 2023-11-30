@@ -4,12 +4,15 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from keras.models import clone_model
 
 from config import ML_MODELS
 
 class GradCAM:
     def __init__(self, model_name):
-        self.model = ML_MODELS[model_name]['model']
+        original_model = ML_MODELS[model_name]['model']
+        self.model = clone_model(original_model)
+        self.model.layers[-1].activation = None
         self.last_conv_layer_name = ML_MODELS[model_name]['last_conv_layer_name']
 
     def get_img_array(self, img_path):
@@ -38,11 +41,9 @@ class GradCAM:
         heatmap = tf.squeeze(heatmap)
 
         heatmap = tf.maximum(heatmap, 0) / tf.math.reduce_max(heatmap)
-        plt.imshow(heatmap, cmap='gray')  # Display as grayscale
-        plt.axis("off")
-        plt.savefig('app/static/img/temp/heatmap.png', bbox_inches='tight')
-        plt.close()
-        return heatmap.numpy()
+        # Rescale heatmap to a range 0-255
+        heatmap = np.nan_to_num(heatmap)
+        return np.uint(255 * heatmap)
 
     def write_gradcam_to_buffer(self, buffer, img_path):
         img = Image.open(img_path)
@@ -52,11 +53,8 @@ class GradCAM:
         # Generate class activation heatmap
         heatmap = self.make_gradcam_heatmap(img_path)
 
-        # Rescale heatmap to a range 0-255
-        heatmap = np.uint8(255 * heatmap)
-
         # Use jet colormap to colorize heatmap
-        jet = mpl.cm.get_cmap("jet")
+        jet = mpl.cm.get_cmap("magma")
         jet_colors = jet(np.arange(256))[:, :3]
         jet_heatmap = jet_colors[heatmap]
 
@@ -64,8 +62,6 @@ class GradCAM:
         jet_heatmap = keras.utils.array_to_img(jet_heatmap)
         jet_heatmap = jet_heatmap.resize((img_array.shape[1], img_array.shape[0]))
         jet_heatmap = keras.utils.img_to_array(jet_heatmap)
-
-
 
         # Superimpose the heatmap on the original image
         superimposed_img = jet_heatmap + img
