@@ -23,9 +23,9 @@
       </div>
 
       <!-- Localization Dropdown -->
-      <div class="mb-3">
+      <div class="mb-3" id="localization-div" style="display: none;">
          <label for="localization" class="form-label">Localization</label>
-         <select class="form-select" id="localization" name="localization" required>
+         <select class="form-select" id="localization" name="localization">
             {% for loc in localizations %}
             <option value="{{ loc }}">{{ loc|capitalize }}</option>
             {% endfor %}
@@ -33,9 +33,9 @@
       </div>
 
       <!-- Gender Dropdown -->
-      <div class="mb-3">
+      <div class="mb-3" id="gender-div" style="display: none;">
          <label for="sex" class="form-label">Sex</label>
-         <select class="form-select" id="gender" name="sex" required>
+         <select class="form-select" id="gender" name="sex">
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
@@ -43,9 +43,9 @@
       </div>
 
       <!-- Age Input Box -->
-      <div class="mb-3">
+      <div class="mb-3" id="age-div" style="display: none;">
          <label for="age" class="form-label">Age</label>
-         <input type="number" class="form-control" id="age" name="age" min="0" max="120" required>
+         <input type="number" class="form-control" id="age" name="age" min="0" max="120">
       </div>
 
       <!-- Upload Button -->
@@ -53,20 +53,33 @@
    </form>
 
    <script>
-      // Function to toggle the 'required' attribute for the Age input based on the selected model
-      function toggleAgeRequired() {
+      // Function to toggle the visibility and 'required' attribute for Age, Localization, and Sex based on the selected model
+      function toggleFieldsVisibility() {
          var modelDropdown = document.getElementById('model');
          var ageInput = document.getElementById('age');
+         var localizationDiv = document.getElementById('localization-div');
+         var sexDiv = document.getElementById('gender-div');
+         var ageDiv = document.getElementById('age-div');
 
-         // If 'multi-input' is selected, make Age required; otherwise, remove the required attribute
-         ageInput.required = (modelDropdown.value === 'Multi-input');
+         if (modelDropdown.value === 'Multi-input') {
+            ageInput.required = true;
+            localizationDiv.style.display = 'block';
+            sexDiv.style.display = 'block';
+            ageDiv.style.display = 'block';
+         } else {
+            ageInput.required = false;
+            localizationDiv.style.display = 'none';
+            sexDiv.style.display = 'none';
+            ageDiv.style.display = 'none';
+         }
       }
 
       // Add an event listener to the Model Selection dropdown to call the function when the value changes
-      document.getElementById('model').addEventListener('change', toggleAgeRequired);
+      document.getElementById('model').addEventListener('change', toggleFieldsVisibility);
 
       // Call the function on page load to set the initial state
-      toggleAgeRequired();
+      toggleFieldsVisibility();
    </script>
+
 </div>
 {% endblock %}
